@@ -1,6 +1,10 @@
 FROM python:3.11.4-slim-buster
 LABEL authors="tom"
 
+RUN apt-get update \
+      && apt-get install -y libmagickwand-dev\
+    && apt-get clean
+
 RUN mkdir -p /home/app
 RUN addgroup --system app && adduser --system --group app
 
