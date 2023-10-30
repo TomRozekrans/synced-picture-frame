@@ -1,0 +1,198 @@
+{% extends "selector/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+    <div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
+        <div>
+            <h1>Upload new Picture</h1>
+
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">
+                            <span class="mdi mdi-home"></span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/albums">
+                            Albums
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item" aria-current="page">
+                        <a href="/albums/{{ album_id }}">
+                            Pictures
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item" aria-current="page">Upload</li>
+                </ol>
+            </nav>
+
+        </div>
+
+        {#        <div>#}
+        {#            <a href="images/create" class="btn btn-primary"> Upload Image#}
+        {#            </a>#}
+        {#        </div>#}
+    </div>
+
+
+    <div class="container">
+        <div class="mb-3">
+            <label for="file" class="form-label">Select image</label>
+            <input type="file" id="file" class="form-control">
+        </div>
+        <button class="btn btn-primary" id="rotate" style="display: none;margin: 4px">Rotate</button>
+        <button class="btn btn-primary" id="reset" style="display: none;margin: 4px">Reset</button>
+        <button class="btn btn-success" id="okbutton" style="display: none;margin: 4px">Save</button>
+        <button class="btn btn-danger" id="cancelbutton" style="display: none;margin: 4px">Cancel</button>
+
+        <div>
+            <img id="image" class="image" src="" alt="Picture" style="display: none">
+        </div>
+        <div id="result" class="result" src="" alt="Result">
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'cropper.css' %}">
+    <style>
+        .container {
+            margin: 20px auto;
+            max-width: 640px;
+            max-height: 640px;
+        }
+
+        image {
+            width: 100%;
+            height: 100%;
+        }
+
+        .result {
+            width: 600px;
+            height: 448px;
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{% static 'cropper.js' %}"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            let file = document.querySelector("#file");
+            let okbutton = document.querySelector("#okbutton");
+            let image = document.querySelector("#image");
+
+            let rotate = document.querySelector("#rotate");
+            let reset = document.querySelector("#reset");
+            let cancelbutton = document.querySelector("#cancelbutton");
+
+            let cropper;
+
+            rotate.addEventListener("click", function () {
+                console.log("rotate")
+                cropper.rotate(90);
+            });
+
+            reset.addEventListener("click", function () {
+                console.log("reset")
+                cropper.reset();
+            });
+
+            cancelbutton.addEventListener("click", function () {
+                console.log("cancel")
+                cropper.destroy();
+                okbutton.style.display = "none";
+                rotate.style.display = "none";
+                reset.style.display = "none";
+                cancelbutton.style.display = "none";
+
+                file.style.display = "inline-block";
+                file.value = "";
+                image.style.display = "none";
+            });
+
+            file.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    okbutton.style.display = "inline-block";
+                    rotate.style.display = "inline-block";
+                    reset.style.display = "inline-block";
+                    cancelbutton.style.display = "inline-block";
+
+                    image.style.display = "block";
+
+                    file.style.display = "none";
+                                        image.src = URL.createObjectURL(this.files[0]); // set src to blob url
+
+                    image.onload = () => {
+                        image.width = "800";
+                        image.height = "640";
+                        {#URL.revokeObjectURL(image.src);  // no longer needed, free memory#}
+                        cropper = new Cropper(image, {
+                            dragMode: 'move',
+                            viewMode: 0,
+                            aspectRatio: 800 / 480,
+                            autoCropArea: 1,
+                            restore: false,
+                            {#guides: false,#}
+                            center: true,
+                            highlight: false,
+                            cropBoxMovable: false,
+                            cropBoxResizable: false,
+                            toggleDragModeOnDblclick: false,
+                            rotatable: true,
+                        });
+                    }
+                }
+            });
+            okbutton.addEventListener("click", function () {
+                let canvas = cropper.getCroppedCanvas({
+                    width: 800,
+                    height: 480,
+                    fillColor: '#fff',
+                });
+                canvas.toBlob(function (blob) {
+                    let formData = new FormData();
+                    formData.append('image', blob, 'image.jpg');
+                    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                    let xhr = new XMLHttpRequest();
+                    xhr.upload.onprogress = function (e) {
+                        let percent = '0';
+                        let percentage = '0%';
+                        if (e.lengthComputable) {
+                            percent = Math.round((e.loaded / e.total) * 100);
+                            okbutton.value = percent + '%';
+                        }
+                    }
+                    xhr.onload = function () {
+                        let res = document.querySelector("#result");
+                        //eeuw
+                        console.log(this.responseText);
+                        res.innerHTML = '<img src='+ this.responseText + '><a class="btn btn-primary" href="/albums/{{ album_id }}">Back</a>' ;
+                        res.style.display = "block";
+                        image.style.display = "none";
+                        cropper.destroy();
+                        okbutton.style.display = "none";
+                        rotate.style.display = "none";
+                        reset.style.display = "none";
+                        cancelbutton.style.display = "none";
+
+                    }
+                    xhr.onerror = function () {
+                        okbutton.value = "error";
+                    }
+                    xhr.open("POST", "");
+                    xhr.send(formData);
+                });
+            });
+        });
+    </script>
+{% endblock %}

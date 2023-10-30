@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "image-selector"
+version = "0.1.0"
+description = ""
+authors = ["tom <tom@rozekrans.nl>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "4.2.3"
+pillow = "^10.1.0"
+djangorestframework = "^3.14.0"
+croniter = "^2.0.1"
+psycopg2-binary = "^2.9.9"
+gunicorn = "^21.2.0"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

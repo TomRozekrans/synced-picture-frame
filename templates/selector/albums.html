@@ -1,0 +1,187 @@
+{% extends "selector/base.html" %}
+{% load switch %}
+
+{% block content %}
+
+    <div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
+        <div>
+            <h1>Albums</h1>
+
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">
+                            <span class="mdi mdi-home"></span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        albums
+                    </li>
+                </ol>
+            </nav>
+
+        </div>
+
+        <div>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-album"> Add
+                Album
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Recent Order Table -->
+            <div class="card card-table-border-none recent-orders" id="recent-orders">
+                {#                <div class="card-header justify-content-between">#}
+                {#                    <h2>Albums</h2>#}
+                {#                </div>#}
+                <div class="row row-cols-1 row-cols-md-4" style="padding: 10px">
+                    {% for album in albums %}
+                        <div class="col mb-4">
+                            <div class="card">
+                                <a href="/albums/{{ album.id }}">
+
+                                    <img class="card-img-top"
+                                         src="{{ album.get_last_picture.image.url|default:"https://via.placeholder.com/150" }}"
+                                         alt="Card image cap">
+                                </a>
+
+
+                                <div class="card-body">
+                                    <div class="dropdown show" style="float: right">
+                                        <a class="" href="#" role="button"
+                                           id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+                                           aria-expanded="false">
+                                            <i class="mdi mdi-dots-vertical" style="float: right;font-size: 24px"></i>
+
+                                        </a>
+
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink"
+                                             style="float: right">
+                                            <a class="dropdown-item" href="/albums/{{ album.id }}">View</a>
+                                            {% if perms.selector.change_picturegroup %}
+                                                <a class="dropdown-item" href="#">Edit</a>
+                                            {% endif %}
+                                            {% if perms.selector.delete_picturegroup %}
+                                                <a class="dropdown-item" href="#">Delete</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <a href="/albums/{{ album.id }}">
+                                        <h5 class="card-title text-primary">{{ album.name }}</h5>
+                                    </a>
+                                    <div class="text-muted">Next
+                                        update: {{ album.current_picture_valid_until|date:"F j, Y, G:i"|default:"unknown" }}
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    {% empty %}
+                        <div class="col mb-4">
+                            No albums
+                        </div>
+
+                    {% endfor %}
+                </div> <div class="col mb-4">
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+
+    <div class="modal" tabindex="-1" role="dialog" id="modal-add-album">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delete_model_title">Add new Album</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="{{ AlbumForm.name.id_for_label }}"
+                               class="form-label">{{ AlbumForm.name.label }}</label>
+                        {{ AlbumForm.name }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ AlbumForm.schedule.id_for_label }}"
+                               class="form-label">{{ AlbumForm.schedule.label }}</label>
+                        {{ AlbumForm.schedule }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ AlbumForm.users.id_for_label }}"
+                               class="form-label">{{ AlbumForm.users.label }}</label>
+                        {{ AlbumForm.users }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">save</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    {#    <script>#}
+    {#        function toggle_token(token, id) {#}
+    {#            var x = document.getElementById("token-" + id);#}
+    {#            if (x.value === "") {#}
+    {#                $(".token-input").each(function () {#}
+    {#                    $(this).val("");#}
+    {#                });#}
+    {##}
+    {#                x.value = token;#}
+    {#            } else {#}
+    {#                x.value = "";#}
+    {#            }#}
+    {#        }#}
+    {##}
+    {##}
+    {#        $('#model').on('hide.bs.modal', function (e) {#}
+    {#            $("#delete_confirm").attr("onclick", "");#}
+    {#        })#}
+    {##}
+    {#        function confirm_delete_device(device_name, device_id) {#}
+    {#            console.log(device_name, device_id)#}
+    {#            $("#delete_model_title").text("Delete " + device_name);#}
+    {#            $("#delete_model_text").text("Are you sure you want to delete " + device_name + "?");#}
+    {#            $("#delete_confirm").attr("onclick", "delete_device(" + device_id + ")");#}
+    {#            $("#model").modal("show");#}
+    {#        }#}
+    {##}
+    {#        function delete_device(device_id) {#}
+    {#            $.post("/devices/" + device_id + "/delete/", {csrfmiddlewaretoken: '{{ csrf_token }}'})#}
+    {#                .fail(function (error) {#}
+    {#                    console.log(error);#}
+    {#                    $("#model").modal("hide");#}
+    {#                    alert("Error deleting device");#}
+    {#                })#}
+    {#                .done(function () {#}
+    {#                    location.reload();#}
+    {#                });#}
+    {#        }#}
+    {#    </script>#}
+{% endblock %}
+
+

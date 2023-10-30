@@ -1,0 +1,169 @@
+{% extends "selector/base.html" %}
+{% load switch %}
+
+{% block content %}
+
+    <div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
+        <div>
+            <h1>Devices</h1>
+
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">
+                            <span class="mdi mdi-home"></span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        devices
+                    </li>
+                </ol>
+            </nav>
+
+        </div>
+
+        <div>
+            <a href="/devices/new" class="btn btn-primary" > Add
+                Device
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Recent Order Table -->
+            <div class="card card-table-border-none recent-orders" id="recent-orders">
+                <div class="card-header justify-content-between">
+                    <h2>Registerd Devices</h2>
+                </div>
+                <div class="card-body pt-0 pb-5">
+                    <table class="table card-table table-responsive table-responsive-large" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>Device Name</th>
+                            <th>Last Checkin</th>
+                            <th class="d-none d-lg-table-cell">Battery Level</th>
+                            <th class="d-none d-lg-table-cell">Last Ip</th>
+                            <th class="d-lg-table-cell">Token</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for device in devices %}
+                            <tr>
+                                <td>{{ device.name }}</td>
+                                <td>{% if device.last_seen %}{{ device.last_seen|timesince }} ago {% else %}
+                                    Never{% endif %}</td>
+                                <td class="d-none d-lg-table-cell">{{ device.last_battery_level }}</td>
+                                <td class="d-none d-lg-table-cell">{{ device.last_seen_ip }}</td>
+                                <td class="d-lg-table-cell">
+                                    <form class="form-inline">
+                                        <input type="text" class="form-control mb-2 mr-sm-2 token-input"
+                                               id="token-{{ device.id }}"
+                                               value=""
+                                               readonly>
+                                        <button type="button" class="btn btn-primary mb-2"
+                                                onclick="toggle_token('{{ device.token }}', {{ device.id }})">Show/Hide
+                                            token
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <span class="badge badge-{% switch device.status "online" "success" "offline" "danger" "warning" "warning" %}"
+                                          data-toggle="tooltip" data-html="true"
+                                          title="{{ device.status_message }}">{{ device.status }}</span>
+                                </td>
+                                <td class="text-right">
+                                    <button onclick="confirm_delete_device('{{ device.name }}', {{ device.id }})"
+                                            class="btn btn-danger btn-sm">Delete
+                                    </button>
+                                </td>
+
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td>No devices yet</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+
+    <div class="modal" tabindex="-1" role="dialog" id="model">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delete_model_title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="delete_model_text"></p>
+                </div>
+                <div class="modal-footer">
+                    <button id="delete_confirm" type="button" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function toggle_token(token, id) {
+            var x = document.getElementById("token-" + id);
+            if (x.value === "") {
+                $(".token-input").each(function () {
+                    $(this).val("");
+                });
+
+                x.value = token;
+            } else {
+                x.value = "";
+            }
+        }
+
+
+        $('#model').on('hide.bs.modal', function (e) {
+            $("#delete_confirm").attr("onclick", "");
+        })
+
+        function confirm_delete_device(device_name, device_id) {
+            console.log(device_name, device_id)
+            $("#delete_model_title").text("Delete " + device_name);
+            $("#delete_model_text").text("Are you sure you want to delete " + device_name + "?");
+            $("#delete_confirm").attr("onclick", "delete_device(" + device_id + ")");
+            $("#model").modal("show");
+        }
+
+        function delete_device(device_id) {
+            $.post("/devices/" + device_id + "/delete/", {csrfmiddlewaretoken: '{{ csrf_token }}'})
+                .fail(function (error) {
+                    console.log(error);
+                    $("#model").modal("hide");
+                    alert("Error deleting device");
+                })
+                .done(function () {
+                    location.reload();
+                });
+        }
+    </script>
+{% endblock %}
+
+
