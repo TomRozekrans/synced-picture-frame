@@ -6,8 +6,8 @@ RUN addgroup --system app && adduser --system --group app
 
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
-RUN mkdir $APP_HOME
-WORKDIR $APP_HOME $APP_HOME/staticfiles $APP_HOME/mediafiles
+RUN mkdir $APP_HOME $APP_HOME/staticfiles $APP_HOME/mediafiles
+WORKDIR $APP_HOME
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -25,17 +25,4 @@ RUN chown -R app:app $APP_HOME
 USER app
 
 ENTRYPOINT ["/home/app/web/entrypoint.sh"]
-
-
-
-
-
-
-
-
-
-
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
-
-
 
