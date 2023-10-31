@@ -21,17 +21,71 @@ RUN_ENV = os.getenv("RUN_ENV", "prod")
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$#g54g!cuj2p5ag$pg7frtz2f4$59b*91_=&asdfasdf6_h7=+4az*v-u=' if RUN_ENV == "dev" else os.environ["SECRET_KEY"]
+SECRET_KEY = 'django-insecure-$#g54g!cuj2p5ag$pg7frtz2f4$59b*91_=&asdfasdf6_h7=+4az*v-u=' if RUN_ENV == "dev" else \
+os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if RUN_ENV == "dev" else False
 
 ALLOWED_HOSTS = ["*"] if RUN_ENV == "dev" else os.environ["ALLOWED_HOSTS"].split(" ")
-CSRF_TRUSTED_ORIGINS = ["*"] if RUN_ENV == "dev" else os.environ["CSRF_TRUSTED_ORIGINS"].split(" ")
+CSRF_TRUSTED_ORIGINS = ["http://*"] if RUN_ENV == "dev" else os.environ["CSRF_TRUSTED_ORIGINS"].split(" ")
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'django.server': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[%(server_time)s] %(message)s',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        },
+        # Custom handler which we will use with logger 'django'.
+        # We want errors/warnings to be logged when DEBUG=False
+        'console_on_not_debug': {
+            'level': 'WARNING',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+        },
+        'django.server': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'django.server',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'mail_admins', 'console_on_not_debug'],
+            'level': 'INFO',
+        },
+        'django.server': {
+            'handlers': ['django.server'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    }
+}
 
 SESSION_COOKIE_SECURE = True if RUN_ENV == "prod" else False
 CSRF_COOKIE_SECURE = True if RUN_ENV == "prod" else False
@@ -82,7 +136,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'image_selector.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -92,7 +145,6 @@ dev_db = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 DATABASES = dev_db if RUN_ENV == "dev" else {
     'default': {
@@ -104,7 +156,6 @@ DATABASES = dev_db if RUN_ENV == "dev" else {
         'PORT': os.getenv("DB_PORT"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -124,7 +175,6 @@ AUTH_PASSWORD_VALIDATORS = [
     # },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -135,7 +185,6 @@ TIME_ZONE = 'Europe/Amsterdam'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
