@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-$#g54g!cuj2p5ag$pg7frtz2f4$59b*91_=&asdfasdf6_h7=+
 DEBUG = True if RUN_ENV == "dev" else False
 
 ALLOWED_HOSTS = ["*"] if RUN_ENV == "dev" else os.environ["ALLOWED_HOSTS"].split(" ")
-CRFS_TRUSTED_ORIGINS = ["*"] if RUN_ENV == "dev" else os.environ["CRFS_TRUSTED_ORIGINS"].split(" ")
+CSRF_TRUSTED_ORIGINS = ["*"] if RUN_ENV == "dev" else os.environ["CSRF_TRUSTED_ORIGINS"].split(" ")
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
