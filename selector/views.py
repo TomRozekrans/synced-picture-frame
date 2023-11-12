@@ -63,7 +63,10 @@ class DeviceTokenRequiredMixin:
             return HttpResponse('No token provided', status=403)
         if not Device.objects.filter(token=token).exists():
             return HttpResponse('Invalid token', status=403)
+
         self.device = Device.objects.get(token=token)
+        if "X-Battery-Voltage" in request.headers:
+            self.device.last_battery_level = request.headers.get("X-Battery-Voltage")
         self.device.last_seen = timezone.now()
         self.device.last_seen_ip = request.META.get('REMOTE_ADDR')
         self.device.save()
