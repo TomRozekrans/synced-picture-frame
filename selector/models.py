@@ -27,7 +27,7 @@ class Device(models.Model):
     name = models.CharField(max_length=100)
     last_seen = models.DateTimeField(null=True, blank=True)
     last_seen_ip = models.CharField(max_length=100, null=True, blank=True)
-    last_battery_level = models.IntegerField(null=True, blank=True)
+    last_battery_level = models.FloatField(null=True, blank=True)
     user = models.ForeignKey('User', on_delete=models.DO_NOTHING, related_name='devices')
     picture_group = models.ForeignKey('PictureGroup', on_delete=models.SET_NULL, null=True, blank=True)
 

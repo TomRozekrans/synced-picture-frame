@@ -66,7 +66,7 @@ class DeviceTokenRequiredMixin:
 
         self.device = Device.objects.get(token=token)
         if "X-Battery-Voltage" in request.headers:
-            self.device.last_battery_level = request.headers.get("X-Battery-Voltage")
+            self.device.last_battery_level = float(request.headers.get("X-Battery-Voltage"))
         self.device.last_seen = timezone.now()
         self.device.last_seen_ip = request.META.get('REMOTE_ADDR')
         self.device.save()
