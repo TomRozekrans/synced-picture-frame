@@ -94,3 +94,18 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+      
+      - name: SSH into server and pull new image
+        uses: appleboy/ssh-action@v0.1.10
+        if: github.event_name != 'pull_request'
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          command_timeout: 30m
+          script: | 
+            cd app
+            docker compose pull
+            docker compose up -d
+            
