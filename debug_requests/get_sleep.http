@@ -1,0 +1,5 @@
+GET http://localhost:8000/next_wakeup/
+Accept: application/json
+X-Device-Token: 935663f7d9ffc7c3
+X-Battery-Voltage: 2.1
+###

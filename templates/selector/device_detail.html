@@ -1,0 +1,285 @@
+{% extends "selector/base.html" %}
+{% load switch %}
+
+{% block content %}
+
+    <div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
+        <div>
+            <h1>{{ device.name }}</h1>
+
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">
+                            <span class="mdi mdi-home"></span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/devices/">Devices</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/devices/{{ device.id }}/">{{ device.name }}</a>
+                    </li>
+                </ol>
+            </nav>
+
+        </div>
+
+        <div>
+            <a href="/devices/new" class="btn btn-primary"> Add
+                Device
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between p-md-1">
+                        <div class="d-flex flex-row">
+                            <div class="align-self-center" data-toggle="tooltip" data-html="true"
+                                 title="{{ device.status_message }}">
+                                <iconify-icon icon="mdi:heart"
+
+                                              style="font-size: 50px;color: {% switch device.status "online" "green" "offline" "red" "warning" "orange" %}"></iconify-icon>
+
+                            </div>
+                            <div style="margin-left: 10px">
+                                <h4>Health</h4>
+                                <p class="mb-0">The status of the device</p>
+                            </div>
+                        </div>
+                        <div class="align-self-center">
+                            <h2 class="h1 mb-0" data-toggle="tooltip" data-html="true"
+                                title="{{ device.status_message }}">{{ device.status }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between p-md-1">
+                        <div class="d-flex flex-row">
+                            <div class="align-self-center">
+                                <iconify-icon icon="tabler:battery-1-filled"
+                                              style="font-size: 50px;color: #54b4d3"></iconify-icon>
+                            </div>
+                            <div style="margin-left: 10px">
+                                <h4>Battery</h4>
+                                <p class="mb-0">The batery voltage of the device</p>
+                            </div>
+                        </div>
+                        <div class="align-self-center">
+                            <h2 class="h1 mb-0">{{ device.last_battery_level }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between p-md-1">
+                        <div class="d-flex flex-row">
+                            <div class="align-self-center">
+                                <iconify-icon icon="mdi-eye-circle"
+                                              style="font-size: 50px;color: #54b4d3"></iconify-icon>
+
+                            </div>
+                            <div style="margin-left: 10px">
+                                <h4>Last Seen</h4>
+                                <p class="mb-0">Last time device connected to the server</p>
+                            </div>
+                        </div>
+                        <div class="align-self-center">
+                            <h2 class="h1 mb-0">{% if device.last_seen %}{{ device.last_seen|timesince }} ago {% else %}
+                                Never{% endif %}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between p-md-1">
+                        <div class="d-flex flex-row">
+                            <div class="align-self-center">
+                                <iconify-icon icon="eos-icons:ip" style="font-size: 50px;color: #54b4d3"></iconify-icon>
+                            </div>
+                            <div style="margin-left: 10px">
+                                <h4>Last Ip-Adress</h4>
+                                <p class="mb-0">The Last ip the device used to connect</p>
+                            </div>
+                        </div>
+                        <div class="align-self-center">
+                            <h2 class="h1 mb-0">{{ device.last_seen_ip }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between p-md-1">
+                        <div class="d-flex flex-row">
+                            <div class="align-self-center">
+                                <iconify-icon icon="mdi:user"
+
+                                              style="font-size: 50px;color: #54b4d3"></iconify-icon>
+
+                            </div>
+                            <div style="margin-left: 10px">
+                                <h4>Owner</h4>
+                                <p class="mb-0">Who does this device belong to</p>
+                            </div>
+                        </div>
+                        <div class="align-self-center">
+                            <h2 class="h1 mb-0">{{ device.user }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between p-md-1">
+                        <div class="d-flex flex-row">
+                            <div class="align-self-center">
+                                <iconify-icon icon="solar:album-outline"
+                                              style="font-size: 50px;color: #54b4d3"></iconify-icon>
+                            </div>
+                            <div style="margin-left: 10px">
+                                <h4>Album</h4>
+                                <p class="mb-0">Which album is shown on this device</p>
+                            </div>
+                        </div>
+                        <div class="align-self-center">
+                            <h2 class="h1 mb-0"><a
+                                    href="/albums/{{ device.picture_group.pk }}">{{ device.picture_group }}</a></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <canvas id="battery_chart"></canvas>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        let battery_data = '';
+        const ctx = document.getElementById('battery_chart');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Battery Level',
+                    data: [
+                        {% for battery_level in device.battery_levels.all %}
+                            {x: '{{ battery_level.date|date:"c"}}', y: {{ battery_level.level   }}},
+                        {% endfor %}
+                        {#             { x: 1700296524, y: 1.0},#}
+                        {##}
+                        {#                { x: 1700296538, y: 1.1},#}
+
+                    ],
+                    borderColor: 'rgb(75, 192, 192)',
+
+
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: {
+                        label: "Date",
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        },
+                        type: 'time',
+                        time:{
+                              displayFormats: {
+                                'millisecond': 'MM DD HH:mm',
+                                'second': 'MM DD HH:mm',
+                                'minute': 'MM DD HH:mm',
+                                'hour': 'MM DD HH:mm',
+                                'day': 'MM DD HH:mm',
+                                'week': 'MM DD HH:mm',
+                                'month': 'MM DD HH:mm',
+                                'quarter': 'MM DD HH:mm',
+                                'year': 'MM DD HH:mm',
+                              }
+                        }
+                    },
+                    yAxes: {
+                        label: "Battery Level",
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Voltage'
+                        },
+                    }
+                }
+            }
+
+        });
+
+    </script>
+
+    {#    <script>#}
+    {#        function toggle_token(token, id) {#}
+    {#            var x = document.getElementById("token-" + id);#}
+    {#            if (x.value === "") {#}
+    {#                $(".token-input").each(function () {#}
+    {#                    $(this).val("");#}
+    {#                });#}
+    {##}
+    {#                x.value = token;#}
+    {#            } else {#}
+    {#                x.value = "";#}
+    {#            }#}
+    {#        }#}
+    {##}
+    {##}
+    {#        $('#model').on('hide.bs.modal', function (e) {#}
+    {#            $("#delete_confirm").attr("onclick", "");#}
+    {#        })#}
+    {##}
+    {#        function confirm_delete_device(device_name, device_id) {#}
+    {#            console.log(device_name, device_id)#}
+    {#            $("#delete_model_title").text("Delete " + device_name);#}
+    {#            $("#delete_model_text").text("Are you sure you want to delete " + device_name + "?");#}
+    {#            $("#delete_confirm").attr("onclick", "delete_device(" + device_id + ")");#}
+    {#            $("#model").modal("show");#}
+    {#        }#}
+    {##}
+    {#        function delete_device(device_id) {#}
+    {#            $.post("/devices/" + device_id + "/delete/", {csrfmiddlewaretoken: '{{ csrf_token }}'})#}
+    {#                .fail(function (error) {#}
+    {#                    console.log(error);#}
+    {#                    $("#model").modal("hide");#}
+    {#                    alert("Error deleting device");#}
+    {#                })#}
+    {#                .done(function () {#}
+    {#                    location.reload();#}
+    {#                });#}
+    {#        }#}
+    {#    </script>#}
+{% endblock %}
+
+

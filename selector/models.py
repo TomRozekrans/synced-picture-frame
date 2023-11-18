@@ -8,18 +8,20 @@ from django.db import models
 from django.utils import timezone
 
 
-
-
-
-
-
-
-
 # Create your models here.
 
 
 class User(AbstractUser):
     pass
+
+
+class BateryLevel(models.Model):
+    level = models.FloatField()
+    date = models.DateTimeField(auto_now_add=True)
+    device = models.ForeignKey('Device', on_delete=models.CASCADE, related_name='battery_levels')
+
+    def __str__(self):
+        return f'{self.level}V'
 
 
 class Device(models.Model):
@@ -36,6 +38,11 @@ class Device(models.Model):
             ("view_devices", "Can view devices"),
         ]
 
+    def set_last_battery_level(self, level):
+        self.last_battery_level = level
+        self.save()
+        BateryLevel.objects.create(level=level, device=self)
+
     @property
     def status(self):
         if self.last_seen is None:
@@ -43,7 +50,8 @@ class Device(models.Model):
 
         if timezone.now() - self.last_seen > timedelta(days=2):
             return 'offline'
-        elif timezone.now() - self.last_seen > timedelta(days=1) or (self.last_battery_level < 20) if self.last_battery_level else False:
+        elif timezone.now() - self.last_seen > timedelta(days=1) or (
+                self.last_battery_level < 20) if self.last_battery_level else False:
             return 'warning'
         else:
             return 'online'
@@ -59,7 +67,7 @@ class Device(models.Model):
         elif timezone.now() - self.last_seen > timedelta(days=1):
             status = 'Device was last seen more than 1 day ago.'
 
-        if self.last_battery_level and self.last_battery_level < 20 :
+        if self.last_battery_level and self.last_battery_level < 20:
             status += '\n Battery level is low.'
 
         return status

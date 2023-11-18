@@ -13,6 +13,7 @@ from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.views.generic import ListView, DeleteView, CreateView
+from django.views.generic.detail import SingleObjectMixin, DetailView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from wand.image import Image
@@ -66,9 +67,13 @@ class DeviceTokenRequiredMixin:
 
         self.device = Device.objects.get(token=token)
         if "X-Battery-Voltage" in request.headers:
-            self.device.last_battery_level = float(request.headers.get("X-Battery-Voltage"))
+            self.device.set_last_battery_level(float(request.headers.get("X-Battery-Voltage")))
         self.device.last_seen = timezone.now()
-        self.device.last_seen_ip = request.META.get('REMOTE_ADDR')
+
+        if "X-Real-IP" in request.headers:
+            self.device.last_seen_ip = request.headers.get("X-Real-IP")
+        else:
+            self.device.last_seen_ip = request.META.get('REMOTE_ADDR')
         self.device.save()
         return super().dispatch(request, *args, **kwargs)
 
@@ -98,6 +103,12 @@ class DeviceListView(PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         return Device.objects.filter(user=self.request.user)
+
+
+class DeviceDetailView(PermissionRequiredMixin, DetailView):
+    model = Device
+    permission_required = 'selector.view_device'
+    template_name = 'selector/device_detail.html'
 
 
 class DeviceDeleteView(PermissionRequiredMixin, DeleteView):
@@ -200,6 +211,7 @@ class CurrentImageId(DeviceTokenRequiredMixin, APIView):
         if not picture_set:
             return HttpResponse('No picture set', status=404)
         return HttpResponse(str(picture_set.get_last_picture().id))
+
 
 class Upload(APIView):
 
