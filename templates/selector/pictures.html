@@ -5,8 +5,7 @@
 
     <div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
         <div>
-            <h1>{{ album_name }} -
-                Pictures</h1>
+            <h1>{{ album_name }}</h1>
 
 
             <nav aria-label="breadcrumb">
@@ -21,7 +20,7 @@
                             Albums
                         </a>
                     </li>
-                    <li class="breadcrumb-item" aria-current="page">Pictures</li>
+                    <li class="breadcrumb-item" aria-current="page">{{ album_name }}</li>
                 </ol>
             </nav>
 
@@ -59,8 +58,9 @@
                             </div>
                         </div>
                     {% empty %}
+                         <div class="col mb-4">
                         No pictures
-
+                        </div>
                     {% endfor %}
                 </div>
 

@@ -3,20 +3,44 @@
 
 {% block content %}
 
-      <div class="row">
+    <div class="row">
         <div class="col-12">
 
             <!-- Recent Order Table -->
             <div class="card card-table-border-none recent-orders" id="recent-orders">
                 <div class="card-header justify-content-between">
-                    <h2>Register New Devices</h2>
+                    {% if object %}
+                        <h2>Edit Device</h2>
+                    {% else %}
+                        <h2>Register New Devices</h2>
+                    {% endif %}
                 </div>
                 <div class="card-body pt-0 pb-5">
+                 {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
                     <form method="post">
                         {% csrf_token %}
-                    {{ form.as_p }}
-                    <input type="submit" class="btn btn-primary" value="Save">
-                </form>
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Device Name</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.picture_group.id_for_label }}" class="form-label">Connected
+                                Album</label>
+                            {{ form.picture_group }}
+                        </div>
+
+                        {% if object %}
+                            <input type="submit" class="btn btn-primary" value="Update">
+                        {% else %}
+                            <input type="submit" class="btn btn-primary" value="Create">
+                        {% endif %}
+                    <a href="/devices/" class="btn btn-secondary">Cancel</a>
+
+                    </form>
                 </div>
             </div>
 

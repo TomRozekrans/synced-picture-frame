@@ -1,0 +1,46 @@
+{% extends "selector/base.html" %}
+{% load switch %}
+
+{% block content %}
+
+    <div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
+        <div>
+            <h1>Permission Denied</h1>
+
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">
+                            <span class="mdi mdi-home"></span>
+                        </a>
+                    </li>
+
+                </ol>
+            </nav>
+
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                {{ exception }}
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
+
+

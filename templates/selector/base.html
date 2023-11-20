@@ -22,7 +22,7 @@
     <link href="https://cdn.materialdesignicons.com/4.4.95/css/materialdesignicons.min.css" rel="stylesheet"/>
 
     <!-- PLUGINS CSS STYLE -->
-{#    <link href="{% static 'assets/plugins/simplebar/simplebar.css' %}" rel="stylesheet"/>#}
+    {#    <link href="{% static 'assets/plugins/simplebar/simplebar.css' %}" rel="stylesheet"/>#}
     <link href="{% static 'assets/plugins/nprogress/nprogress.css' %}" rel="stylesheet"/>
 
     <!-- No Extra plugin used -->
@@ -93,22 +93,24 @@
             <div class="" data-simplebar style="height: 100%;">
                 <!-- sidebar menu -->
                 <ul class="nav sidebar-inner" id="sidebar-menu">
-                    <li class="{% active_link "albums" "active" %}">
-                        <a class="sidenav-item-link" href="/albums"
-                           aria-expanded="false" aria-controls="dashboard">
-                            <i class="mdi mdi-view-dashboard-outline"></i>
-                            <span class="nav-text">Albums</span> <b class="caret"></b>
-                        </a>
-                    </li>
+                    {% if perms.selector.view_picturegroup %}
+                        <li class="{% active_link "albums" "active" %}">
+                            <a class="sidenav-item-link" href="/albums"
+                               aria-expanded="false" aria-controls="dashboard">
+                                <i class="mdi mdi-view-dashboard-outline"></i>
+                                <span class="nav-text">Albums</span> <b class="caret"></b>
+                            </a>
+                        </li>
+                    {% endif %}
 
                     {% if perms.selector.view_device %}
-                    <li class="{% active_link "devices" "active" %}">
-                        <a class="sidenav-item-link" href="/devices"
-                           aria-expanded="false" aria-controls="app">
-                            <i class="mdi mdi-pencil-box-multiple"></i>
-                            <span class="nav-text">Devices</span> <b class="caret"></b>
-                        </a>
-                    </li>
+                        <li class="{% active_link "devices" "active" %}">
+                            <a class="sidenav-item-link" href="/devices"
+                               aria-expanded="false" aria-controls="app">
+                                <i class="mdi mdi-pencil-box-multiple"></i>
+                                <span class="nav-text">Devices</span> <b class="caret"></b>
+                            </a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
@@ -137,7 +139,7 @@
                         <!-- User Account -->
                         <li class="dropdown user-menu">
                             <button href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-{#                                <img src="{% static 'assets/img/user/user.png' %}" class="user-image" alt="User Image"/>#}
+                                {#                                <img src="{% static 'assets/img/user/user.png' %}" class="user-image" alt="User Image"/>#}
                                 <span class="d-none d-lg-inline-block">{{ user.username }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right">
@@ -197,6 +199,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+
+
 <script src='{% static 'assets/js/chart.js' %}'></script>
 
 
@@ -212,8 +218,6 @@
 <script src='{% static 'assets/plugins/toastr/toastr.min.js' %}'></script>
 {#<script src="//code.iconify.design/1/1.0.6/iconify.min.js"></script>#}
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-
-
 
 
 <script src="{% static 'assets/js/sleek.js' %}"></script>

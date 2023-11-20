@@ -5,20 +5,23 @@ from datetime import datetime
 from io import BytesIO
 
 from croniter import croniter
+from django import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.utils import timezone
-from django.views.generic import ListView, DeleteView, CreateView
+from django.views.generic import ListView, DeleteView, CreateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin, DetailView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from wand.image import Image
 
-from selector.forms import AlbumForm
+from selector.forms import AlbumForm, AlbumFormUpdate, DeviceForm
 from selector.models import Picture, PictureGroup, Device
 
 
@@ -110,21 +113,35 @@ class DeviceDetailView(PermissionRequiredMixin, DetailView):
     permission_required = 'selector.view_device'
     template_name = 'selector/device_detail.html'
 
+    def get_object(self, queryset=None):
+        obj = super(DeviceDetailView, self).get_object(queryset=queryset)
+        if not obj.user == self.request.user:
+            raise PermissionDenied("You are not allowed to view this device")
+        return obj
+
 
 class DeviceDeleteView(PermissionRequiredMixin, DeleteView):
     model = Device
     success_url = '/devices'
     permission_required = 'selector.view_device'
 
-    def get(self, request, *args, **kwargs):
-        return HttpResponse('Methode not allowed', status=403)
+    def get_object(self, queryset=None):
+        obj = super(DeviceDeleteView, self).get_object(queryset=queryset)
+        if not obj.user == self.request.user:
+            raise PermissionDenied("You are not allowed to delete this device")
+        return obj
 
 
 class DeviceCreateView(PermissionRequiredMixin, CreateView):
     model = Device
     success_url = '/devices'
-    fields = ['name']
-    permission_required = 'selector.view_device'
+    permission_required = 'selector.add_device'
+    form_class = DeviceForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -132,10 +149,24 @@ class DeviceCreateView(PermissionRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class AlbumListView(LoginRequiredMixin, ListView):
+class DeviceUpdateView(PermissionRequiredMixin, UpdateView):
+    model = Device
+    success_url = '/devices'
+    permission_required = 'selector.change_device'
+    form_class = DeviceForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+
+class AlbumListView(PermissionRequiredMixin, ListView):
     model = PictureGroup
     template_name = 'selector/albums.html'
     context_object_name = 'albums'
+    permission_required = 'selector.view_picturegroup'
+    permission_denied_message = 'You are not allowed to view albums'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -143,26 +174,70 @@ class AlbumListView(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        # groups = PictureGroup.objects.filter(users=self.request.user)
-
-        return PictureGroup.objects.filter(users=self.request.user)
+        return PictureGroup.objects.filter(Q(users=self.request.user) | Q(admins=self.request.user)).distinct()
 
 
-class AlbumCreateView(LoginRequiredMixin):
+class AlbumCreateView(PermissionRequiredMixin, CreateView):
+    model = PictureGroup
+    success_url = '/albums'
+    permission_required = 'selector.add_picturegroup'
+    permission_denied_message = 'You are not allowed to create albums'
+    form_class = AlbumForm
 
-    def post(self, request):
-        name = request.POST.get('name')
-        schedule = request.POST.get('schedule')
-        picture_group = PictureGroup(name=name, schedule=schedule)
-        picture_group.save()
-        picture_group.users.add(request.user)
-        return HttpResponse('OK')
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.users.add(self.request.user)
+        self.object.admins.add(self.request.user)
+        return response
 
 
-class PictureListView(LoginRequiredMixin, ListView):
+class AlbumUpdateView(PermissionRequiredMixin, UpdateView):
+    model = PictureGroup
+    success_url = '/albums'
+    permission_required = 'selector.change_picturegroup'
+    permission_denied_message = 'You are not allowed to edit albums'
+    form_class = AlbumFormUpdate
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.users.add(self.request.user)
+        self.object.admins.add(self.request.user)
+        return response
+
+    def get(self, request, *args, **kwargs):
+        if not self.get_object().admins.filter(id=self.request.user.id).exists():
+            raise PermissionDenied("You are not allowed to edit this album")
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if not self.get_object().admins.filter(id=self.request.user.id).exists():
+            raise PermissionDenied("You are not allowed to edit this album")
+        return super().post(request, *args, **kwargs)
+
+
+class AlbumDeleteView(PermissionRequiredMixin, DeleteView):
+    model = PictureGroup
+    success_url = '/albums'
+    permission_required = 'selector.delete_picturegroup'
+    permission_denied_message = 'You are not allowed to delete albums'
+
+    def get(self, request, *args, **kwargs):
+        if not self.get_object().admins.filter(id=self.request.user.id).exists():
+            raise PermissionDenied("You are not allowed to delete this album")
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if not self.get_object().admins.filter(id=self.request.user.id).exists():
+            raise PermissionDenied("You are not allowed to delete this album")
+        return super().post(request, *args, **kwargs)
+
+
+class PictureListView(PermissionRequiredMixin, ListView):
     model = Picture
     template_name = 'selector/pictures.html'
     context_object_name = 'pictures'
+    permission_required = 'selector.view_picture'
+    permission_denied_message = 'You are not allowed to view pictures'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -216,9 +291,22 @@ class CurrentImageId(DeviceTokenRequiredMixin, APIView):
 class Upload(APIView):
 
     def get(self, request, album_id, format=None):
-        return TemplateResponse(request, 'selector/upload_image.html', {'album_id': album_id})
+
+        album = PictureGroup.objects.get(id=album_id)
+        if not album.admins.filter(id=self.request.user.id).exists() and not album.users.filter(id=self.request.user.id).exists():
+            raise PermissionDenied("You are not allowed to edit this album")
+
+        return TemplateResponse(request, 'selector/upload_image.html', {'album_id': album_id, 'album_name': album.name})
 
     def post(self, request, album_id, format=None):
+
+        group = PictureGroup.objects.get(id=album_id)
+        if not group.admins.filter(id=self.request.user.id).exists() and not group.users.filter(
+                id=self.request.user.id).exists():
+            raise PermissionDenied("You are not allowed to edit this album")
+
+
+
 
         if 'image' not in request.data:
             return Response(status=400, data='No image file')
@@ -272,7 +360,3 @@ class Upload(APIView):
                 picture_group.pictures.add(picture)
                 # picture_group.pictures.create(image=proces_image, raw_image=image, name=image.name).save()
                 return Response(status=200, data=picture.image.url)
-
-#
-# def imageList(ListView):
-#     return render(ListView, 'selector/imageList.html')

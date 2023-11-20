@@ -13,3 +13,5 @@ def switch(value, *args, **kwargs):
     for i in range(0, len(args), 2):
         if value == args[i]:
             return args[i + 1]
+
+

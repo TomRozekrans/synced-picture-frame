@@ -238,6 +238,26 @@
                             text: 'Voltage'
                         },
                     }
+                },
+                plugins: {
+                    zoom:{
+                        pan:{
+                            enabled: true,
+                            mode: 'x',
+                            speed: 10,
+                            threshold: 10
+                        },
+                        zoom:{
+                            enabled: true,
+                            mode: 'x',
+                            speed: 0.1,
+                            threshold: 2,
+                            wheel:{
+                                enabled: true,
+                                modifierKey: 'shift',
+                            }
+                        }
+                    }
                 }
             }
 

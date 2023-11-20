@@ -1,0 +1,104 @@
+{% extends "selector/base.html" %}
+{% load switch %}
+
+{% block content %}
+
+    <div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
+        <div>
+            <h1>Delete Album</h1>
+
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">
+                            <span class="mdi mdi-home"></span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/albums/"> albums</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/albums/{{ object.id }}">{{ object.name }}</a>
+                    </li>
+                </ol>
+            </nav>
+
+        </div>
+    </div>
+
+        <div class="row">
+            <div class="col-12">
+
+                <!-- Recent Order Table -->
+                <div class="card card-table-border-none recent-orders" id="recent-orders">
+                    <div class="card-header justify-content-between">
+                       <h2> Delete Album {{ object.name }}</h2>
+                    </div>
+
+                    <div class="card-body pt-0 pb-5">
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                {{ form.errors }}
+                            </div>
+                        {% endif %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <p>Are you sure you want to delete Album: "{{ object.name }}"?</p>
+                                <input type="submit" class="btn btn-danger" value="Delete">
+
+                            <a href="/albums" class="btn btn-secondary">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+    {#    <div class="modal" tabindex="-1" role="dialog" id="modal-add-album">#}
+    {#        <div class="modal-dialog" role="document">#}
+    {#            <div class="modal-content">#}
+    {#                <div class="modal-header">#}
+    {#                    <h5 class="modal-title" id="delete_model_title">Add new Album</h5>#}
+    {#                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+    {#                        <span aria-hidden="true">&times;</span>#}
+    {#                    </button>#}
+    {#                </div>#}
+    {#                <div class="modal-body">#}
+    {#                    <div class="mb-3">#}
+    {#                        <label for="{{ AlbumForm.name.id_for_label }}"#}
+    {#                               class="form-label">{{ AlbumForm.name.label }}</label>#}
+    {#                        {{ AlbumForm.name }}#}
+    {#                    </div>#}
+    {#                    <div class="mb-3">#}
+    {#                        <label for="{{ AlbumForm.schedule.id_for_label }}"#}
+    {#                               class="form-label">{{ AlbumForm.schedule.label }}</label>#}
+    {#                        {{ AlbumForm.schedule }}#}
+    {#                    </div>#}
+    {#                    <div class="mb-3">#}
+    {#                        <label for="{{ AlbumForm.users.id_for_label }}"#}
+    {#                               class="form-label">{{ AlbumForm.users.label }}</label>#}
+    {#                        {{ AlbumForm.users }}#}
+    {#                    </div>#}
+    {#                </div>#}
+    {#                <div class="modal-footer">#}
+    {#                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
+    {#                    <button type="button" class="btn btn-primary">save</button>#}
+    {##}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
+
+

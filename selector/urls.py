@@ -13,15 +13,20 @@ urlpatterns = [
     path("devices/", views.DeviceListView.as_view(), name="devices"),
     path("devices/<int:pk>/", views.DeviceDetailView.as_view(), name="device_detail"),
     path("devices/<int:pk>/delete/", views.DeviceDeleteView.as_view(), name="device_delete"),
+    path("devices/<int:pk>/update/", views.DeviceUpdateView.as_view(), name="device_update"),
     path("devices/new/", views.DeviceCreateView.as_view(), name="device_new"),
 
     path("albums/", views.AlbumListView.as_view(), name="albums"),
-
+    path("albums/new/", views.AlbumCreateView.as_view(), name="album_new"),
     path("albums/<int:album_id>/", views.PictureListView.as_view(), name="pictures"),
+    path("albums/<int:pk>/update/", views.AlbumUpdateView.as_view(), name="album_update"),
+    path("albums/<int:pk>/delete/", views.AlbumDeleteView.as_view(), name="album_delete"),
 
     path("albums/<int:album_id>/images/create", views.Upload.as_view(), name="upload_image"),
 
-    path("upload_image/", views.Upload.as_view(), name="upload_image"),
+
+
+    # API
     path("last_image/", views.LastImage.as_view(), name="last_image"),
     path("last_image_raw/", views.LastImageRaw.as_view(), name="last_image_raw"),
     path("next_wakeup/", views.NextWakeup.as_view(), name="next_wakeup"),

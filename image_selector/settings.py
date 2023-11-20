@@ -22,7 +22,7 @@ RUN_ENV = os.getenv("RUN_ENV", "prod")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-$#g54g!cuj2p5ag$pg7frtz2f4$59b*91_=&asdfasdf6_h7=+4az*v-u=' if RUN_ENV == "dev" else \
-os.environ["SECRET_KEY"]
+    os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if RUN_ENV == "dev" else False
@@ -101,6 +101,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'selector',
+    "django_browser_reload",
 ]
 
 AUTH_USER_MODEL = "selector.User"
@@ -113,6 +114,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = 'image_selector.urls'
