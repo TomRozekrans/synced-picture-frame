@@ -50,6 +50,21 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-browser-reload"
+version = "1.12.1"
+description = "Automatically reload your browser in development."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django-browser-reload-1.12.1.tar.gz", hash = "sha256:875b6bd01db13380522ccb4ae75871a2edeae74bb5ac92bf32eb76763d575d86"},
+    {file = "django_browser_reload-1.12.1-py3-none-any.whl", hash = "sha256:08b457f1b6599bf782d4d2ecdfb0897d6fc936ac4035060d0269c2af5ef4ef7a"},
+]
+
+[package.dependencies]
+asgiref = ">=3.6"
+Django = ">=3.2"
+
+[[package]]
 name = "djangorestframework"
 version = "3.14.0"
 description = "Web APIs for Django, made easy."
@@ -307,13 +322,13 @@ files = [
 
 [[package]]
 name = "wand"
-version = "0.6.11"
+version = "0.6.13"
 description = "Ctypes-based simple MagickWand API binding for Python"
 optional = false
 python-versions = "*"
 files = [
-    {file = "Wand-0.6.11-py2.py3-none-any.whl", hash = "sha256:1b77e25439ace57f665d1ccc6cff2766fad0834005b89ae3e7aaf3ba12b124b0"},
-    {file = "Wand-0.6.11.tar.gz", hash = "sha256:b661700da9f8f1e931e52726e4fc643a565b9514f5883d41b773e3c37c9fa995"},
+    {file = "Wand-0.6.13-py2.py3-none-any.whl", hash = "sha256:e5dda0ac2204a40c29ef5c4cb310770c95d3d05c37b1379e69c94ea79d7d19c0"},
+    {file = "Wand-0.6.13.tar.gz", hash = "sha256:f5013484eaf7a20eb22d1821aaefe60b50cc329722372b5f8565d46d4aaafcca"},
 ]
 
 [package.extras]
@@ -323,4 +338,4 @@ test = ["pytest (>=7.2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "f1acaa68b26609beccdb42bcdee3c226829af88852d49ec077df66cfd174f8d8"
+content-hash = "056aa0ba3786c97e90e99b115266b05001ad1a4966608fdc25c9badab23b250e"
