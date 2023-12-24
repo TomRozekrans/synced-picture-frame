@@ -1,0 +1,107 @@
+{% extends "selector/base.html" %}
+{% load switch %}
+
+{% block content %}
+
+    <div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
+        <div>
+            <h1>Devices</h1>
+
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb p-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">
+                            <span class="mdi mdi-home"></span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        users
+                    </li>
+                </ol>
+            </nav>
+
+        </div>
+
+        <div>
+            <a href="/devices/new" class="btn btn-primary"> Add
+                Device
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Recent Order Table -->
+            <div class="card card-table-border-none recent-orders" id="recent-orders">
+                <div class="card-header justify-content-between">
+                    <h2>Registerd Users</h2>
+                </div>
+                <div class="card-body pt-0 pb-5">
+                    <table class="table card-table table-responsive table-responsive-large" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Groups</th>
+                            <th>Albums</th>
+                            <th>Admin</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ user.username }}</td>
+                                <td>
+                                    {% for group in user.groups.all %}
+                                        <span class="badge badge-primary">{{ group }}</span>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for album in user.admin_picture_groups.all %}
+                                        <span class="badge badge-success">{{ album }}</span>
+                                    {% endfor %}
+                                    {% for album in user.picture_groups.all %}
+                                        {% if not album in user.admin_picture_groups.all %}
+                                            <span class="badge badge-secondary">{{ album }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </td>
+
+
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td>No users yet</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function toggle_token(token, id) {
+            var x = document.getElementById("token-" + id);
+            if (x.value === "") {
+                $(".token-input").each(function () {
+                    $(this).val("");
+                });
+
+                x.value = token;
+            } else {
+                x.value = "";
+            }
+        }
+    </script>
+{% endblock %}
+
+

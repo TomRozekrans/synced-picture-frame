@@ -22,7 +22,7 @@ from rest_framework.views import APIView
 from wand.image import Image
 
 from selector.forms import AlbumForm, AlbumFormUpdate, DeviceForm
-from selector.models import Picture, PictureGroup, Device
+from selector.models import Picture, PictureGroup, Device, User
 
 
 # Create your views here.
@@ -98,6 +98,13 @@ def base(request):
     return render(request, 'selector/base.html')
 
 
+class AdminUserListView(PermissionRequiredMixin, ListView):
+    model = User
+    template_name = 'selector/admin_users.html'
+    context_object_name = 'users'
+    permission_required = 'selector.view_device_admin'
+
+
 class DeviceListView(PermissionRequiredMixin, ListView):
     model = Device
     template_name = 'selector/devices.html'
@@ -108,6 +115,13 @@ class DeviceListView(PermissionRequiredMixin, ListView):
         return Device.objects.filter(user=self.request.user)
 
 
+class AllDeviceListView(DeviceListView):
+    permission_required = 'selector.view_device_admin'
+
+    def get_queryset(self):
+        return Device.objects.all()
+
+
 class DeviceDetailView(PermissionRequiredMixin, DetailView):
     model = Device
     permission_required = 'selector.view_device'
@@ -115,7 +129,7 @@ class DeviceDetailView(PermissionRequiredMixin, DetailView):
 
     def get_object(self, queryset=None):
         obj = super(DeviceDetailView, self).get_object(queryset=queryset)
-        if not obj.user == self.request.user:
+        if not obj.user == self.request.user and not self.request.user.has_perm('selector.view_device_admin'):
             raise PermissionDenied("You are not allowed to view this device")
         return obj
 
@@ -175,6 +189,14 @@ class AlbumListView(PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         return PictureGroup.objects.filter(Q(users=self.request.user) | Q(admins=self.request.user)).distinct()
+
+
+class AllAlbumListView(AlbumListView):
+    permission_required = 'selector.view_picturegroup_admin'
+    permission_denied_message = 'You are not allowed to view albums'
+
+    def get_queryset(self):
+        return PictureGroup.objects.all()
 
 
 class AlbumCreateView(PermissionRequiredMixin, CreateView):
@@ -245,7 +267,13 @@ class PictureListView(PermissionRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        return Picture.objects.filter(picture_group__users=self.request.user, picture_group__id=self.kwargs['album_id'])
+        album = PictureGroup.objects.filter(id=self.kwargs['album_id']).first()
+
+        if album.admins.filter(id=self.request.user.id).exists() or album.users.filter(
+                id=self.request.user.id).exists() or self.request.user.has_perm('selector.view_picturegroup_admin'):
+            return Picture.objects.filter(picture_group__id=self.kwargs['album_id'])
+
+        raise PermissionDenied("You are not allowed to view this album")
 
 
 class LastImage(DeviceTokenRequiredMixin, APIView):
@@ -293,7 +321,8 @@ class Upload(APIView):
     def get(self, request, album_id, format=None):
 
         album = PictureGroup.objects.get(id=album_id)
-        if not album.admins.filter(id=self.request.user.id).exists() and not album.users.filter(id=self.request.user.id).exists():
+        if not album.admins.filter(id=self.request.user.id).exists() and not album.users.filter(
+                id=self.request.user.id).exists():
             raise PermissionDenied("You are not allowed to edit this album")
 
         return TemplateResponse(request, 'selector/upload_image.html', {'album_id': album_id, 'album_name': album.name})
@@ -304,9 +333,6 @@ class Upload(APIView):
         if not group.admins.filter(id=self.request.user.id).exists() and not group.users.filter(
                 id=self.request.user.id).exists():
             raise PermissionDenied("You are not allowed to edit this album")
-
-
-
 
         if 'image' not in request.data:
             return Response(status=400, data='No image file')

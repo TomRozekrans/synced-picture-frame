@@ -264,46 +264,6 @@
         });
 
     </script>
-
-    {#    <script>#}
-    {#        function toggle_token(token, id) {#}
-    {#            var x = document.getElementById("token-" + id);#}
-    {#            if (x.value === "") {#}
-    {#                $(".token-input").each(function () {#}
-    {#                    $(this).val("");#}
-    {#                });#}
-    {##}
-    {#                x.value = token;#}
-    {#            } else {#}
-    {#                x.value = "";#}
-    {#            }#}
-    {#        }#}
-    {##}
-    {##}
-    {#        $('#model').on('hide.bs.modal', function (e) {#}
-    {#            $("#delete_confirm").attr("onclick", "");#}
-    {#        })#}
-    {##}
-    {#        function confirm_delete_device(device_name, device_id) {#}
-    {#            console.log(device_name, device_id)#}
-    {#            $("#delete_model_title").text("Delete " + device_name);#}
-    {#            $("#delete_model_text").text("Are you sure you want to delete " + device_name + "?");#}
-    {#            $("#delete_confirm").attr("onclick", "delete_device(" + device_id + ")");#}
-    {#            $("#model").modal("show");#}
-    {#        }#}
-    {##}
-    {#        function delete_device(device_id) {#}
-    {#            $.post("/devices/" + device_id + "/delete/", {csrfmiddlewaretoken: '{{ csrf_token }}'})#}
-    {#                .fail(function (error) {#}
-    {#                    console.log(error);#}
-    {#                    $("#model").modal("hide");#}
-    {#                    alert("Error deleting device");#}
-    {#                })#}
-    {#                .done(function () {#}
-    {#                    location.reload();#}
-    {#                });#}
-    {#        }#}
-    {#    </script>#}
 {% endblock %}
 
 

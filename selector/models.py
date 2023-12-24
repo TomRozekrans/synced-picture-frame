@@ -12,7 +12,11 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
-   pass
+    class Meta:
+        permissions = [
+            ("view_user_admin", "Can view all users"),
+        ]
+
     # class Meta:
     #     permissions = [
     #         ("view_users", "Can view users"),
@@ -41,6 +45,7 @@ class Device(models.Model):
     class Meta:
         permissions = [
             ("view_devices", "Can view devices"),
+            ("view_device_admin", "Can view all devices"),
         ]
 
     def set_last_battery_level(self, level):
@@ -106,6 +111,11 @@ class PictureGroup(models.Model):
     current_picture_valid_until = models.DateTimeField(null=True, blank=True)
     users = models.ManyToManyField('User', blank=True, related_name='picture_groups')
     admins = models.ManyToManyField('User', related_name='admin_picture_groups')
+
+    class Meta:
+        permissions = [
+            ("view_picturegroup_admin", "Can view all picture groups"),
+        ]
 
     def get_new_picture(self) -> Optional[Picture]:
 

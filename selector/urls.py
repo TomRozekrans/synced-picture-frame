@@ -10,13 +10,17 @@ urlpatterns = [
     path("login/", auth_views.LoginView.as_view(template_name="selector/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 
+    path("admin_users/", views.AdminUserListView.as_view(), name="admin_users"),
+
     path("devices/", views.DeviceListView.as_view(), name="devices"),
+    path("all_devices/", views.AllDeviceListView.as_view(), name="all_devices"),
     path("devices/<int:pk>/", views.DeviceDetailView.as_view(), name="device_detail"),
     path("devices/<int:pk>/delete/", views.DeviceDeleteView.as_view(), name="device_delete"),
     path("devices/<int:pk>/update/", views.DeviceUpdateView.as_view(), name="device_update"),
     path("devices/new/", views.DeviceCreateView.as_view(), name="device_new"),
 
     path("albums/", views.AlbumListView.as_view(), name="albums"),
+    path("all_albums/", views.AllAlbumListView.as_view(), name="all_albums"),
     path("albums/new/", views.AlbumCreateView.as_view(), name="album_new"),
     path("albums/<int:album_id>/", views.PictureListView.as_view(), name="pictures"),
     path("albums/<int:pk>/update/", views.AlbumUpdateView.as_view(), name="album_update"),

@@ -97,7 +97,8 @@
                         <li class="{% active_link "albums" "active" %}">
                             <a class="sidenav-item-link" href="/albums"
                                aria-expanded="false" aria-controls="dashboard">
-                                <i class="mdi mdi-view-dashboard-outline"></i>
+                                <iconify-icon icon="jam:pictures-f" style="color: #a6aab4;margin-right: 15px" width="30px"></iconify-icon>
+
                                 <span class="nav-text">Albums</span> <b class="caret"></b>
                             </a>
                         </li>
@@ -107,8 +108,28 @@
                         <li class="{% active_link "devices" "active" %}">
                             <a class="sidenav-item-link" href="/devices"
                                aria-expanded="false" aria-controls="app">
-                                <i class="mdi mdi-pencil-box-multiple"></i>
+                                <iconify-icon icon="bxs:microchip" style="color: #a6aab4;margin-right: 15px" width="30px"></iconify-icon>
                                 <span class="nav-text">Devices</span> <b class="caret"></b>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if perms.selector.view_picturegroup_admin %}
+                        <li class="{% active_link "all_albums" "active" %}">
+                            <a class="sidenav-item-link" href="/all_albums"
+                               aria-expanded="false" aria-controls="app">
+                                <iconify-icon icon="jam:pictures-f" style="color: #a6aab4;margin-right: 15px" width="30px"></iconify-icon>
+                                <span class="nav-text">All albums</span> <b class="caret"></b>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                {% if perms.selector.view_device_admin %}
+                        <li class="{% active_link "all_devices" "active" %}">
+                            <a class="sidenav-item-link" href="/all_devices"
+                               aria-expanded="false" aria-controls="app">
+                                <iconify-icon icon="bxs:microchip" style="color: #a6aab4;margin-right: 15px" width="30px"></iconify-icon>
+                                <span class="nav-text">All Devices</span> <b class="caret"></b>
                             </a>
                         </li>
                     {% endif %}
@@ -146,6 +167,11 @@
                                 <li class="dropdown">
                                     <a href="{% url 'logout' %}"> <i class="mdi mdi-logout"></i> Log Out </a>
                                 </li>
+                                {% if perms.selector.view_user_admin%}
+                                <li class="dropdown">
+                                    <a href="{% url 'admin_users' %}"><iconify-icon icon="teenyicons:users-solid" style="color: #a6aab4;margin-right: 15px"></iconify-icon> Users</a>
+                                </li>
+                                {% endif %}
                             </ul>
                         </li>
                     </ul>
