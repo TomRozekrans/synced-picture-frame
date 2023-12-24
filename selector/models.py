@@ -56,7 +56,7 @@ class Device(models.Model):
         if timezone.now() - self.last_seen > timedelta(days=2):
             return 'offline'
         elif timezone.now() - self.last_seen > timedelta(days=1) or (
-                self.last_battery_level < 20) if self.last_battery_level else False:
+                self.last_battery_level < 3.4) if self.last_battery_level else False:
             return 'warning'
         else:
             return 'online'
@@ -72,7 +72,7 @@ class Device(models.Model):
         elif timezone.now() - self.last_seen > timedelta(days=1):
             status = 'Device was last seen more than 1 day ago.'
 
-        if self.last_battery_level and self.last_battery_level < 20:
+        if self.last_battery_level and self.last_battery_level < 3.4:
             status += '\n Battery level is low.'
 
         return status
